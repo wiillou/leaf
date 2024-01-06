@@ -6,7 +6,6 @@ use std::env::var;
 use systemstat::{Duration, Platform, System};
 
 use std::process::Command;
-use std::io;
 use os_release::OsRelease;
 
 fn format_uptime(uptime: Duration) -> String {
@@ -34,18 +33,44 @@ fn format_uptime(uptime: Duration) -> String {
 }
 
 
+
 fn getPkgs() -> Result<String, Box<dyn std::error::Error>> {
-   let release = OsRelease::new()?;
-   if release.id == "nixos" || release.id_like == "nixos" {
-       let output = Command::new("sh")
-           .arg("-c")
-           .arg("nix-store -qR /run/current-system/sw ~/.nix-profile | wc -l")
-           .output()?;
-       let output_str = String::from_utf8_lossy(&output.stdout).into_owned();
-       Ok(output_str)
-   } else {
-       Ok("0".to_string())
-   }
+  let release = OsRelease::new()?;
+  match release.id.as_str() {
+      "debian" | "ubuntu" => {
+          let output = Command::new("sh")
+              .arg("-c")
+              .arg("dpkg --get-selections | grep -v deinstall | wc -l")
+              .output()?;
+          let output_str = String::from_utf8_lossy(&output.stdout).into_owned();
+          Ok(output_str)
+      },
+      "centos" | "fedora" => {
+          let output = Command::new("sh")
+              .arg("-c")
+              .arg("rpm -qa | wc -l")
+              .output()?;
+          let output_str = String::from_utf8_lossy(&output.stdout).into_owned();
+          Ok(output_str)
+      },
+      "arch" | "manjaro" | "endevouros" => {
+          let output = Command::new("sh")
+              .arg("-c")
+              .arg("pacman -Q | wc -l")
+              .output()?;
+          let output_str = String::from_utf8_lossy(&output.stdout).into_owned();
+          Ok(output_str)
+      },
+      "nixos" | "snowflakeos" => {
+          let output = Command::new("sh")
+              .arg("-c")
+              .arg("nix-store -qR /run/current-system/sw ~/.nix-profile | wc -l")
+              .output()?;
+          let output_str = String::from_utf8_lossy(&output.stdout).into_owned();
+          Ok(output_str)
+      },
+      _ => Ok("0".to_string()),
+  }
 }
 
 fn main() {
@@ -68,6 +93,8 @@ fn main() {
        Err(_) => String::from("An error occurred"),
     };
 
+    //get kernel
+    let kernel_version = String::from_utf8_lossy(&Command::new("uname").arg("-r").output().expect("Failed to execute command").stdout).into_owned();
 
     // format fetch text
     let fetch_text = vec![
@@ -76,9 +103,9 @@ fn main() {
         format!("{GREEN} {WHITE} ~ {GREEN}{}{BLUE}", format_uptime(uptime)),
         format!("{CYAN} {WHITE} ~ {CYAN}{wm}{BLUE}"),
         format!("{BLUE} {WHITE} ~ {BLUE}{term}{BLUE}"),
-        format!("{PURPLE} {WHITE} ~ {PURPLE}{shell}{BLUE}"),
+        format!("{MAGENTA} {WHITE} ~ {MAGENTA}{shell}{BLUE}"),
         format!("{RED}󰏖 {WHITE} ~ {RED}{pkgs}{BLUE}"),
-        format!("{WHITE}● {RED}● {YELLOW}● {GREEN}● {CYAN}● {BLUE}● {PURPLE}● {BLACK}● {RESET}"),
+        format!("{WHITE}● {RED}● {YELLOW}● {GREEN}● {CYAN}● {BLUE}● {MAGENTA}● {BLACK}● {RESET}"),
     ]
     .join("\n");
 
