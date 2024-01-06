@@ -31,25 +31,25 @@ fn format_uptime(uptime: Duration) -> String {
    result.trim().to_string()
 }
 
-fn getPkgs() -> Result<String, String> {
-   
-   let distroName = match whoami::distro() {
-     Ok(distro) => distro.split(' ').next().unwrap_or("Unknown"),
-     Err(_) => "Unknown".to_string(),
-   };
 
-   if distroName == "NixOS" {
-       let output = Command::new("sh")
-           .arg("-c")
-           .arg("nix-store -qR /run/current-system/sw ~/.nix-profile | wc -l")
-           .output()
-           .map_err(|e| e.to_string())?;
-       let output_str = String::from_utf8(output.stdout).unwrap_or_else(|_| "".to_string());
-       return Ok(output_str);
-   }
-   else {
-       return Ok("0".to_string());
-   }
+fn getPkgs() -> String {
+  let distroName = match whoami::distro() {
+      Ok(distro) => distro.split(' ').next().unwrap_or("Unknown"),
+      Err(_) => "Unknown".to_string(),
+  };
+
+  if distroName == "NixOS" {
+      let output = Command::new("sh")
+          .arg("-c")
+          .arg("nix-store -qR /run/current-system/sw ~/.nix-profile | wc -l")
+          .output()
+          .expect("Failed to execute command");
+      let output_str = String::from_utf8(output.stdout).unwrap_or_else(|_| "".to_string());
+      return output_str;
+  }
+  else {
+      return "0".to_string();
+  }
 }
 
 fn main() {
