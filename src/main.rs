@@ -33,7 +33,6 @@ fn format_uptime(uptime: Duration) -> String {
 }
 
 
-
 fn getPkgs() -> Result<String, Box<dyn std::error::Error>> {
   let release = OsRelease::new()?;
   match release.id.as_str() {
@@ -42,7 +41,7 @@ fn getPkgs() -> Result<String, Box<dyn std::error::Error>> {
               .arg("-c")
               .arg("dpkg --get-selections | grep -v deinstall | wc -l")
               .output()?;
-          let output_str = String::from_utf8_lossy(&output.stdout).into_owned();
+          let output_str = String::from_utf8_lossy(&output.stdout).into_owned().trim_end().to_string();
           Ok(output_str)
       },
       "centos" | "fedora" => {
@@ -50,7 +49,7 @@ fn getPkgs() -> Result<String, Box<dyn std::error::Error>> {
               .arg("-c")
               .arg("rpm -qa | wc -l")
               .output()?;
-          let output_str = String::from_utf8_lossy(&output.stdout).into_owned();
+          let output_str = String::from_utf8_lossy(&output.stdout).into_owned().trim_end().to_string();
           Ok(output_str)
       },
       "arch" | "manjaro" | "endevouros" => {
@@ -58,7 +57,7 @@ fn getPkgs() -> Result<String, Box<dyn std::error::Error>> {
               .arg("-c")
               .arg("pacman -Q | wc -l")
               .output()?;
-          let output_str = String::from_utf8_lossy(&output.stdout).into_owned();
+          let output_str = String::from_utf8_lossy(&output.stdout).into_owned().trim_end().to_string();
           Ok(output_str)
       },
       "nixos" | "snowflakeos" => {
@@ -66,7 +65,7 @@ fn getPkgs() -> Result<String, Box<dyn std::error::Error>> {
               .arg("-c")
               .arg("nix-store -qR /run/current-system/sw ~/.nix-profile | wc -l")
               .output()?;
-          let output_str = String::from_utf8_lossy(&output.stdout).into_owned();
+          let output_str = String::from_utf8_lossy(&output.stdout).into_owned().trim_end().to_string();
           Ok(output_str)
       },
       _ => Ok("0".to_string()),
