@@ -53,7 +53,7 @@ fn main() {
             whoami::hostname()
         ),
         format!("{CYAN}󰻀 {WHITE} ~ {CYAN}{}{BLUE}", whoami::distro()),
-        format!("{YELLOW}  {WHITE} ~ {YELLOW}{}{BLUE}", format_uptime(uptime)),
+        format!("{YELLOW} {WHITE} ~ {YELLOW}{}{BLUE}", format_uptime(uptime)),
         format!("{GREEN} {WHITE} ~ {GREEN}{wm}{BLUE}"),
         format!("{MAGENTA} {WHITE} ~ {MAGENTA}{term}{BLUE}"),
         format!("{YELLOW_BRIGHT} {WHITE} ~ {YELLOW_BRIGHT}{shell}{BLUE}"),
