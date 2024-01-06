@@ -52,11 +52,11 @@ fn main() {
             whoami::username(),
             whoami::hostname()
         ),
-        format!("{CYAN}os {WHITE} ~ {CYAN}{}{BLUE}", whoami::distro()),
-        format!("{YELLOW}up {WHITE} ~ {YELLOW}{}{BLUE}", format_uptime(uptime)),
-        format!("{GREEN}wm {WHITE} ~ {GREEN}{wm}{BLUE}"),
-        format!("{MAGENTA}te {WHITE} ~ {MAGENTA}{term}{BLUE}"),
-        format!("{YELLOW_BRIGHT}sh {WHITE} ~ {YELLOW_BRIGHT}{shell}{BLUE}"),
+        format!("{CYAN}󰻀 {WHITE} ~ {CYAN}{}{BLUE}", whoami::distro()),
+        format!("{YELLOW}  {WHITE} ~ {YELLOW}{}{BLUE}", format_uptime(uptime)),
+        format!("{GREEN} {WHITE} ~ {GREEN}{wm}{BLUE}"),
+        format!("{MAGENTA} {WHITE} ~ {MAGENTA}{term}{BLUE}"),
+        format!("{YELLOW_BRIGHT} {WHITE} ~ {YELLOW_BRIGHT}{shell}{BLUE}"),
         format!("{WHITE}● {RED}● {YELLOW}● {GREEN}● {CYAN}● {BLUE}● {PURPLE}● {BLACK}● {RESET}"),
     ]
     .join("\n");
