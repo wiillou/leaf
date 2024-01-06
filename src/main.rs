@@ -6,6 +6,8 @@ use std::env::var;
 use systemstat::{Duration, Platform, System};
 
 use std::process::Command;
+use std::io;
+use os_release::OsRelease;
 
 fn format_uptime(uptime: Duration) -> String {
    let total_seconds = uptime.as_secs();
@@ -32,24 +34,18 @@ fn format_uptime(uptime: Duration) -> String {
 }
 
 
-fn getPkgs() -> String {
-  let distroName = match whoami::distro() {
-      Ok(distro) => distro.split(' ').next().unwrap_or("Unknown"),
-      Err(_) => "Unknown".to_string(),
-  };
-
-  if distroName == "NixOS" {
-      let output = Command::new("sh")
-          .arg("-c")
-          .arg("nix-store -qR /run/current-system/sw ~/.nix-profile | wc -l")
-          .output()
-          .expect("Failed to execute command");
-      let output_str = String::from_utf8(output.stdout).unwrap_or_else(|_| "".to_string());
-      return output_str;
-  }
-  else {
-      return "0".to_string();
-  }
+fn getPkgs() -> Result<String, Box<dyn std::error::Error>> {
+   let release = OsRelease::new()?;
+   if release.id == "nixos" || release.id_like == "nixos" {
+       let output = Command::new("sh")
+           .arg("-c")
+           .arg("nix-store -qR /run/current-system/sw ~/.nix-profile | wc -l")
+           .output()?;
+       let output_str = String::from_utf8_lossy(&output.stdout).into_owned();
+       Ok(output_str)
+   } else {
+       Ok("0".to_string())
+   }
 }
 
 fn main() {
@@ -68,12 +64,10 @@ fn main() {
     let uptime = sys.uptime().unwrap_or_else(|_| Duration::default());   
       
     let pkgs = match getPkgs() {
-      Ok(count) => count,
-      Err(error) => {
-          eprintln!("An error occurred: {}", error);
-          "0".to_string()
-      },
+       Ok(pkgs) => pkgs,
+       Err(_) => String::from("An error occurred"),
     };
+
 
     // format fetch text
     let fetch_text = vec![
@@ -83,7 +77,7 @@ fn main() {
         format!("{CYAN} {WHITE} ~ {CYAN}{wm}{BLUE}"),
         format!("{BLUE} {WHITE} ~ {BLUE}{term}{BLUE}"),
         format!("{PURPLE} {WHITE} ~ {PURPLE}{shell}{BLUE}"),
-        format!("{RED}󰏖 {WHITE} ~ {RED}{pkgs}{BLUE}")
+        format!("{RED}󰏖 {WHITE} ~ {RED}{pkgs}{BLUE}"),
         format!("{WHITE}● {RED}● {YELLOW}● {GREEN}● {CYAN}● {BLUE}● {PURPLE}● {BLACK}● {RESET}"),
     ]
     .join("\n");

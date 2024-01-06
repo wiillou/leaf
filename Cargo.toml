@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 systemstat = "0.2.3"
 whoami = "1.4.1"
+os-release = "0.1.0"
