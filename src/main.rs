@@ -47,16 +47,12 @@ fn main() {
 
     // format fetch text
     let fetch_text = vec![
-        format!(
-            "{WHITE}{}{RED}@{RESET}{}{BLUE}",
-            whoami::username(),
-            whoami::hostname()
-        ),
-        format!("{CYAN}󰻀 {WHITE} ~ {CYAN}{}{BLUE}", whoami::distro()),
-        format!("{YELLOW} {WHITE} ~ {YELLOW}{}{BLUE}", format_uptime(uptime)),
-        format!("{GREEN} {WHITE} ~ {GREEN}{wm}{BLUE}"),
-        format!("{MAGENTA} {WHITE} ~ {MAGENTA}{term}{BLUE}"),
-        format!("{YELLOW_BRIGHT} {WHITE} ~ {YELLOW_BRIGHT}{shell}{BLUE}"),
+        format!("{RED} {WHITE} ~ {WHITE}{}{CYAN}@{WHITE}{}{BLUE}", whoami::username(), whoami::hostname()),
+        format!("{YELLOW}󰻀 {WHITE} ~ {YELLOW}{}{BLUE}", whoami::distro()),
+        format!("{GREEN} {WHITE} ~ {GREEN}{}{BLUE}", format_uptime(uptime)),
+        format!("{CYAN} {WHITE} ~ {CYAN}{wm}{BLUE}"),
+        format!("{BLUE} {WHITE} ~ {BLUE}{term}{BLUE}"),
+        format!("{PURPLE} {WHITE} ~ {PURPLE}{shell}{BLUE}"),
         format!("{WHITE}● {RED}● {YELLOW}● {GREEN}● {CYAN}● {BLUE}● {PURPLE}● {BLACK}● {RESET}"),
     ]
     .join("\n");
